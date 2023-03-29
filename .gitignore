@@ -1,0 +1,5 @@
+CMakeCache.txt
+CMakeFiles/
+CMakeLists.txt.user
+*.autosave
+*.cmake
