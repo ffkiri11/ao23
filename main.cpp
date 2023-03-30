@@ -39,8 +39,8 @@ int main(int argc, char* argv[])
 
     // When Chatroom send's broadcast message, the middleware sends the message
     // to all it's users
-    QObject::connect(&chatRoom, &ChatRoom::outgoingBroadcastMessage,
-                     &middleware, &ChatRoomTcpMiddleware::broadcastMessage);
+    QObject::connect(&chatRoom, &ChatRoom::outgoingMessage,
+                     &middleware, &ChatRoomTcpMiddleware::sendMessage);
 
     middleware.listen(port);
 

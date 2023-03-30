@@ -330,12 +330,18 @@ ChatRoom::ChatRoom(QObject *parent) : QObject(parent)
 void ChatRoom::userJoin(const ChatRoomUser *user)
 {
     QObject::connect(user, &ChatRoomUser::incomingMessage,
-                     this, &ChatRoom::processBroadcastMessage);
+                     this, &ChatRoom::processMessage);
 }
 
-void ChatRoom::processBroadcastMessage(const QString &message)
+void ChatRoom::processMessage(const QString &message)
 {
+    // TODO: parse raw content, create filter
     // Connect this to the middleware's sendMessage
-    emit ChatRoom::outgoingBroadcastMessage(message,
-                                            (ChatRoomUser*)QObject::sender());
+
+    emit ChatRoom::outgoingMessage(
+        message,
+        (ChatRoomUser*)QObject::sender(),
+        [](const ChatRoomUser *user) {
+            return true;
+        });
 }

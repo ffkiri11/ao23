@@ -334,17 +334,12 @@ ChatRoomTcpMiddleware::ChatRoomTcpMiddleware(QObject *parent) : QObject(parent),
 
 void ChatRoomTcpMiddleware::sendMessage(const QString &message,
                                         const ChatRoomUser *from,
-                                        const QList<const ChatRoomUser *> &to)
+                                        ChatRoomUserP filter)
 {
     QString opening(from->address.toString() + " wrote:");
-    emit outgoingData(opening.toUtf8(), to);
-    emit outgoingData(message.toUtf8(), to);
-}
+    emit outgoingData(opening.toUtf8(), filter);
+    emit outgoingData(message.toUtf8(), filter);
 
-void ChatRoomTcpMiddleware::broadcastMessage(const QString &message,
-                                             const ChatRoomUser *from)
-{
-    this->sendMessage(message, from);
 }
 
 

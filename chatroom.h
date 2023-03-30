@@ -5,6 +5,7 @@
 #include <QTcpServer>
 #include <QTcpSocket>
 #include <QList>
+#include <memory>
 
 #include "chatroomuser.h"
 #include "chatroomtcpmiddleware.h"
@@ -334,10 +335,12 @@ public:
     explicit ChatRoom(QObject *parent = nullptr);
 
 public slots:
-    void processBroadcastMessage(const QString &message);
+    void processMessage(const QString &message);
     void userJoin(const ChatRoomUser *user);
 signals:
-    void outgoingBroadcastMessage(const QString &message, const ChatRoomUser *from);
+    void outgoingMessage(const QString &message,
+                         const ChatRoomUser *from,
+                         ChatRoomUserP filter);
 
 };
 

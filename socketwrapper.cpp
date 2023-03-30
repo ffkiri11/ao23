@@ -327,16 +327,9 @@ SocketWrapper::SocketWrapper(QObject* parent,
 {
 }
 
-void SocketWrapper::write(const QByteArray &data, const QList<const ChatRoomUser *> to)
+void SocketWrapper::write(const QByteArray &data,
+                          ChatRoomUserP filter)
 {
-    // In case of explicit "to:"
-    for (const ChatRoomUser *dst : to) {
-        if (*dst == m_user) socket->write(data);
-    }
-
-    // In case of broadcast
-    if (!to.length()) {
+    if (filter(const_cast<ChatRoomUser *>(m_user)))
         socket->write(data);
-    }
 }
-

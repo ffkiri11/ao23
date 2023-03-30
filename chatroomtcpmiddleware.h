@@ -340,15 +340,12 @@ public:
 public slots:
     void sendMessage(const QString &message,
                      const ChatRoomUser *from,
-                     const QList<const ChatRoomUser *> &to
-                     = QList<const ChatRoomUser *>());
-
-    void broadcastMessage(const QString &message,
-                     const ChatRoomUser *from);
+                     ChatRoomUserP filter);
 
 signals:
     void connectionAccepted(const ChatRoomUser *user);
-    void outgoingData(const QByteArray &data, const QList<const ChatRoomUser *> &to);
+    void outgoingData(const QByteArray &data,
+                      ChatRoomUserP filter);
 
 private:
     void processNewConnection();
