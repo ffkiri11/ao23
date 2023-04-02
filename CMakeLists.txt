@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 
-project(tempqt LANGUAGES CXX)
+project(chatroom LANGUAGES CXX)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
@@ -37,24 +37,19 @@ add_library(chatroomtcpmiddleware OBJECT
             chatroomtcpmiddleware.h
             chatroomtcpmiddleware.cpp)
 
-
-#add_library(msa OBJECT
-#            msa.h
-#            msa.cpp)
-
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
-    qt_add_executable(tempqt
+    qt_add_executable(chatroom_server
         ${PROJECT_SOURCES}
     )
 
     qt_create_translation(QM_FILES ${CMAKE_SOURCE_DIR} ${TS_FILES})
 else()
     if(ANDROID)
-        add_library(tempqt SHARED
+        add_library(chatroom_server SHARED
             ${PROJECT_SOURCES}
         )
     else()
-        add_executable(tempqt
+        add_executable(chatroom_server
             ${PROJECT_SOURCES}
         )
     endif()
@@ -64,12 +59,11 @@ endif()
 
 #find_package(Qt5 COMPONENTS Quick REQUIRED)
 
-target_link_libraries(tempqt PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
-target_link_libraries(tempqt PRIVATE Qt${QT_VERSION_MAJOR}::Network)
+target_link_libraries(chatroom_server PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
+target_link_libraries(chatroom_server PRIVATE Qt${QT_VERSION_MAJOR}::Network)
 target_link_libraries(chatroom PRIVATE Qt${QT_VERSION_MAJOR}::Network)
 target_link_libraries(chatroomuser PRIVATE Qt${QT_VERSION_MAJOR}::Network)
 target_link_libraries(chatroomtcpmiddleware PRIVATE Qt${QT_VERSION_MAJOR}::Network)
-#target_link_libraries(msa PRIVATE Qt${QT_VERSION_MAJOR}::Network Quick)
-target_link_libraries(tempqt PRIVATE chatroom)
-target_link_libraries(tempqt PRIVATE chatroomtcpmiddleware)
-target_link_libraries(tempqt PRIVATE chatroomuser)
+target_link_libraries(chatroom_server PRIVATE chatroom)
+target_link_libraries(chatroom_server PRIVATE chatroomtcpmiddleware)
+target_link_libraries(chatroom_server PRIVATE chatroomuser)
