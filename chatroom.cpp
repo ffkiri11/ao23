@@ -1,5 +1,7 @@
 #include <QTcpServer>
 #include <QList>
+#include <QRegExp>
+#include <iostream>
 #include "chatroom.h"
 #include "chatroomtcpmiddleware.h"
 
@@ -331,17 +333,59 @@ void ChatRoom::userJoin(const ChatRoomUser *user)
 {
     QObject::connect(user, &ChatRoomUser::incomingMessage,
                      this, &ChatRoom::processMessage);
+
+    // Welcome joined user
+    emit ChatRoom::outgoingMessage(
+        "=========================================\n"
+        "Welcome to hell!\n"
+        "Write the message and press <RETURN>.\n"
+        "If you want to write private, please use:\n"
+        "PRIVMSG TO MSG\n"
+        "form.\n"
+        "Good luck!\n"
+        "=========================================\n",
+        user,
+        [user](const ChatRoomUser *other) {
+            return user->id == other->id;
+        });
+    // Send notification
+    emit ChatRoom::outgoingMessage(
+        QString("%1 has entered the chat\n\n").arg(user->id.toString()),
+        user,
+        [user](const ChatRoomUser *other) {
+            return user->id != other->id;
+        });
 }
 
 void ChatRoom::processMessage(const QString &message)
 {
-    // TODO: parse raw content, create filter
-    // Connect this to the middleware's sendMessage
+    ChatRoomUser * user = (ChatRoomUser*)QObject::sender();
+    QString outgoing(message);
+    QString cmd("PRIVMSG ");
+
+    ChatRoomUserP filter = [user] (const ChatRoomUser *other) {
+        return user->id != other->id;
+    };
+
+    if (const int pos = outgoing.indexOf(cmd) != -1) {
+        outgoing.remove(0, cmd.length());
+        QString to(outgoing.section(QRegExp("\\s+"), 0, 0));
+        outgoing.remove(0, to.length());
+        outgoing[0] = '-';
+        filter = [to] (const ChatRoomUser *user) {
+            return user->id == QUuid(to);
+        };
+    }
 
     emit ChatRoom::outgoingMessage(
-        message,
-        (ChatRoomUser*)QObject::sender(),
-        [](const ChatRoomUser *user) {
-            return true;
-        });
+        QString("\n%1 wrote:\n").arg(user->id.toString()),
+        user,
+        filter
+    );
+    outgoing.append("\n");
+    emit ChatRoom::outgoingMessage(
+        outgoing,
+        user,
+        filter
+    );
 }

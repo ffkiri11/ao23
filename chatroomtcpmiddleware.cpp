@@ -336,10 +336,7 @@ void ChatRoomTcpMiddleware::sendMessage(const QString &message,
                                         const ChatRoomUser *from,
                                         ChatRoomUserP filter)
 {
-    QString opening(from->address.toString() + " wrote:");
-    emit outgoingData(opening.toUtf8(), filter);
     emit outgoingData(message.toUtf8(), filter);
-
 }
 
 
@@ -352,9 +349,6 @@ void ChatRoomTcpMiddleware::processNewConnection()
 
     qDebug() << "Client " << socket->peerAddress() << " accepted";
 
-    // Notify application layer with the newly joined user
-    emit connectionAccepted(user);
-
     // Connect the socket'ready readyRead to the User's messageSent
     QObject::connect(socket, &QIODevice::readyRead,
                      user, &ChatRoomUser::drainIODevice);
@@ -362,6 +356,10 @@ void ChatRoomTcpMiddleware::processNewConnection()
     // Connect the middleware's outgoingData to the sockets write
     QObject::connect(this, &ChatRoomTcpMiddleware::outgoingData,
                      wrapper, &SocketWrapper::write);
+
+
+    // Notify application layer with the newly joined user
+    emit connectionAccepted(user);
 }
 
 
